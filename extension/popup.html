@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Booking Data Connector 365D</title>
+
+  <style>
+    body {
+      width: 440px;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      color: #222;
+    }
+
+    h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 21px;
+    }
+
+    h3 {
+      margin-top: 18px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 11px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.6;
+    }
+
+    .primary {
+      background: #003b95;
+      color: white;
+      border: none;
+    }
+
+    .secondary {
+      background: #eaf1fc;
+      color: #003b95;
+      border: 1px solid #c6d7f3;
+    }
+
+    #status,
+    #trendStatus {
+      line-height: 1.5;
+      margin: 14px 0;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+    }
+
+    #summary {
+      display: none;
+      padding: 12px;
+      background: #f3f6fa;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    #search {
+      display: none;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .property {
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      padding: 12px;
+      margin-bottom: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .property-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .property-detail {
+      margin-top: 3px;
+      font-size: 12px;
+    }
+
+    .property-id {
+      color: #666;
+    }
+
+    .property-status {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    #resultsCount,
+    #trendCount {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+
+    #trendSection {
+      display: none;
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 2px solid #ddd;
+    }
+
+    .trend-card {
+      border: 1px solid #d5dce5;
+      border-radius: 7px;
+      padding: 12px;
+      margin-bottom: 12px;
+      overflow-wrap: anywhere;
+    }
+
+    .trend-property-name {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .trend-property-id {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .month-row {
+      border-top: 1px solid #eee;
+      padding: 10px 0;
+    }
+
+    .month-name {
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .month-detail {
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .partial-month {
+      color: #9a6700;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    .trend-error {
+      color: #b00020;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Booking Data Connector 365D</h2>
+
+  <p class="subtitle">
+    Histórico mensal dos últimos 365 dias:
+    visualizações em pesquisa, visitas à página e reservas,
+    com comparação com o grupo de concorrentes.
+  </p>
+
+  <button id="connectBooking">
+    Verificar conexão
+  </button>
+
+  <button id="getProperties" class="primary">
+    Buscar hotéis
+  </button>
+
+  <p id="status">
+    Conecte-se ao Booking para começar.
+  </p>
+
+  <div id="summary">
+    <strong>Partner Account ID:</strong>
+    <span id="accountId">—</span>
+    <br>
+
+    <strong>Total de propriedades:</strong>
+    <span id="totalProperties">0</span>
+    <br>
+
+    <strong>Hotéis abertos:</strong>
+    <span id="openProperties">0</span>
+  </div>
+
+  <h3 id="propertiesHeading" style="display:none">
+    Propriedades
+  </h3>
+
+  <input
+    id="search"
+    type="search"
+    placeholder="Buscar hotel pelo nome ou ID..."
+    autocomplete="off"
+  >
+
+  <div id="resultsCount"></div>
+
+  <div id="properties"></div>
+
+  <section id="trendSection">
+
+    <h3>Histórico mensal — 365 dias</h3>
+
+    <p class="subtitle">
+      Os dados são consultados por hotel. O mês parcial é identificado
+      quando a Booking retorna isMtd = true.
+    </p>
+
+    <button id="getTrends" class="primary">
+      Extrair histórico mensal
+    </button>
+
+    <p id="trendStatus">
+      Carregue as propriedades para começar.
+    </p>
+
+    <div id="trendCount"></div>
+
+    <button
+      id="exportCsv"
+      class="secondary"
+      style="display:none"
+    >
+      Exportar histórico mensal para CSV
+    </button>
+
+    <div id="trendResults"></div>
+
+  </section>
+
+  <script src="popup.js"></script>
+
+</body>
+
+</html>
