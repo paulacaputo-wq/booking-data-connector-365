@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Booking Data Connector 365D",
+  "version": "1.0.0",
+  "description": "Extrai métricas mensais de visibilidade, visitas e reservas dos últimos 365 dias do Booking Extranet.",
+  "permissions": [
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://admin.booking.com/*",
+    "https://*.booking.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Booking Data Connector 365D",
+    "default_popup": "popup.html"
+  }
+}
